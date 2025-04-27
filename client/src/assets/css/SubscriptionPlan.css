@@ -1,0 +1,128 @@
+/* Main container */
+.subscription-container {
+  padding: 50px 0;
+  min-height: 100vh;
+}
+
+/* Title */
+.plan-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 40px;
+}
+
+/* Plan Card */
+.plan-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  overflow: hidden;
+  position: relative;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 400px;
+}
+
+/* Hover effect */
+.plan-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Popular Plan Badge */
+.popular-badge {
+  background: #ff9800;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 8px 15px;
+  position: absolute;
+  top: 15px;
+  right: -10px;
+  transform: rotate(10deg);
+  border-radius: 8px;
+}
+
+/* Free Trial Card */
+.free-trial {
+  background: #ff980021;
+  color: white;
+}
+
+.free-trial h2,
+.free-trial li {
+  color: white;
+}
+
+/* Free Trial Text */
+.free-trial-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Plan Title */
+.plan-card h2 {
+  font-size: 1.8rem;
+  color: #444;
+  margin-bottom: 15px;
+}
+
+/* Features List */
+.plan-card ul {
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.plan-card ul li {
+  font-size: 1.1rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+/* Feature Icon */
+.feature-icon {
+  color: #4caf50;
+  font-size: 1.2rem;
+}
+
+/* Plan Price */
+.plan-price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ff9800;
+  margin-bottom: 20px;
+}
+
+/* Purchase Button */
+.purchase-btn {
+  background: #ff9800;
+  color: white;
+  padding: 12px 20px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.purchase-btn:hover {
+  background: #e68900;
+}
+
+/* Free Trial Button */
+.free-trial .purchase-btn {
+  background: white;
+  color: #2196F3;
+}
+
+.free-trial .purchase-btn:hover {
+  background: #e3f2fd;
+}

@@ -1,0 +1,267 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.Footer-links >  a:hover {
+  text-decoration: underline !important;
+}
+
+.logo-img{
+  filter: invert(1);
+}
+
+h1, h3 {
+  color: #333333;
+  margin-bottom: 15px;
+}
+
+p {
+  color: #555555;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+p a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+p a:hover {
+  text-decoration: underline;
+}
+
+
+
+.container-ed {
+  background-color: #fdec96; 
+}
+
+/* Editor containers */
+.editor-container {
+  flex: 1;
+  height: 400px; 
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #f9f9f9;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Monaco Editor Wrapper */
+.monaco-editor {
+  padding: 15px 0px;
+}
+
+/* Scrollbar customization */
+.monaco-scrollable-element {
+  scrollbar-width: thin;
+  scrollbar-color: #aaa transparent; /* Styling for modern browsers */
+}
+
+.monaco-scrollable-element::-webkit-scrollbar {
+  width: 10px; /* Adjust scrollbar width */
+}
+
+.monaco-scrollable-element::-webkit-scrollbar-thumb {
+  background: #ccc; /* Scrollbar thumb color */
+  border-radius: 5px;
+}
+
+.monaco-scrollable-element::-webkit-scrollbar-thumb:hover {
+  background: #bbb; /* Hover effect */
+}
+
+/* Placeholder text style */
+.monaco-editor .inputarea::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* Highlighting line numbers */
+.monaco-editor .margin {
+  background: #f0f0f0;
+  color: #555;
+}
+
+/* Active line highlight */
+.monaco-editor .current-line {
+  background: #eef; /* Light blue for current line */
+}
+
+/* Error or warning underline styling */
+.monaco-editor .squiggly-error {
+  text-decoration: underline red;
+}
+
+.monaco-editor .squiggly-warning {
+  text-decoration: underline orange;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .editor-container {
+    height: 300px; /* Reduce height for smaller screens */
+  }
+
+  .monaco-editor {
+    font-size: 12px; /* Adjust font size for better readability */
+  }
+}
+
+
+
+/* Scroll-to-Top Button */
+.scroll-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #ffd700;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+  z-index: 1000;
+}
+
+.scroll-to-top:hover {
+  background-color: #2980b9;
+}
+
+.scroll-to-top:active {
+  transform: scale(0.95);
+}
+
+.scroll-to-top.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+
+/* Settings and Bookmark UI Container */
+.settings-bookmark-box {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: #f8f9fa;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Bookmark Button */
+.settings-bookmark-box .bookmark-btn {
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  transition: background-color 0.3s;
+}
+
+.settings-bookmark-box .bookmark-btn:hover {
+  background-color: #ffe58f;
+}
+
+/* Form labels and inputs */
+.settings-bookmark-box label {
+  font-size: 0.9rem;
+  margin-bottom: 0.2rem;
+  display: block;
+  color: #333;
+}
+
+.settings-bookmark-box .form-check-label {
+  margin-left: 0.3rem;
+  font-weight: 500;
+}
+
+.settings-bookmark-box .form-select,
+.settings-bookmark-box .form-control {
+  font-size: 0.9rem;
+  padding: 0.4rem;
+  margin-bottom: 0.75rem;
+  border-radius: 6px;
+}
+
+
+.container-ed.dark-mode {
+  background-color: #000;
+  color: #fff;
+}
+
+.container-ed.dark-mode h1,
+.container-ed.dark-mode h2,
+.container-ed.dark-mode h3,
+.container-ed.dark-mode h4,
+.container-ed.dark-mode h5,
+.container-ed.dark-mode h6,
+.container-ed.dark-mode p {
+  color: #fff;
+}
+
+textarea[theme="vs-dark"]  , textarea[theme="vs-dark"]:focus , input[theme="vs-dark"]  , input[theme="vs-dark"]:focus{
+  background-color: #1e1e1e; /* VS Code dark background */
+  color: #d4d4d4;            /* VS Code light foreground */
+  border: 1px solid #333;    /* subtle dark border */
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 14px;
+  padding: 8px;
+  border-radius: 4px;
+  resize: vertical;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+textarea[theme="vs-dark"]:focus  , input[theme="vs-dark"]:focus{
+  border-color: #007acc; /* VS Code blue highlight */
+  box-shadow: 0 0 5px #007acc88;
+}
+
+
+textarea[theme="vs-dark"]::placeholder , input[theme="vs-dark"]::placeholder {
+  color: #6a9955; /* VS Code dark theme placeholder greenish tint */
+  opacity: 1;     /* Ensure full opacity for better visibility */
+}
+
+select[theme="vs-dark"] {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  border: 1px solid #333;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 14px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  appearance: none; /* Remove default arrow for consistent styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #d4d4d4 50%),
+    linear-gradient(135deg, #d4d4d4 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) calc(1em + 2px),
+    calc(100% - 15px) calc(1em + 2px);
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+select[theme="vs-dark"]:focus {
+  border-color: #007acc;
+  box-shadow: 0 0 5px #007acc88;
+}
+
+/* Placeholder styling for the first disabled option */
+select[theme="vs-dark"] option[disabled] {
+  color: #6a9955; /* VS Code placeholder green */
+}

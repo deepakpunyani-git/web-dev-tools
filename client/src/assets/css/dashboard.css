@@ -1,0 +1,37 @@
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+  }
+  
+  .dashboard-menu {
+    width: 250px;
+    background: #000;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .dashboard-menu a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+  }
+  
+ 
+  
+  .dashboard-content {
+    flex: 1;
+    padding: 20px;
+  }
+
+  .dashboard-menu a:hover {
+    color: #ffd700 !important;
+}
+  
+
+.dashboard-menu a.active {
+    font-weight: bold;
+    color: #ffd700;
+  }

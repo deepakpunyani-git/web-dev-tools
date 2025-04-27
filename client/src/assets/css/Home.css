@@ -1,0 +1,118 @@
+.request-more-section {
+    background: linear-gradient(135deg, #f39c12, #f1c40f);
+    color: #fff;
+    padding: 60px 30px;
+    text-align: center;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    font-family: "Arial", sans-serif;
+    margin: 40px auto;
+    max-width: 800px;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .req-main{
+    padding: 20px;
+    background-color: #2d2d2d;
+  }
+
+  .email-address {
+    font-size: 1.2rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px 15px;
+    display: inline-block;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+  
+  .email-address strong {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  .email-address strong:hover{
+    color:blue
+  }
+  .request-more-section:hover {
+    transform: translateY(-5px);
+  }
+  
+  .icon-wrapper {
+    background-color: #fff;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .feature-icon {
+    color: #f39c12;
+    font-size: 2.5rem;
+  }
+  
+  .request-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .request-description {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    line-height: 1.6;
+    color: #fff;
+  }
+  
+  .request-btn {
+    display: inline-block;
+    text-decoration: none;
+    background: #fff;
+    color: #f39c12;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    font-weight: bold;
+    transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .request-btn:hover {
+    background: #f1c40f;
+    color: #fff;
+    transform: scale(1.05);
+  }
+  
+
+  .copied-message {
+    font-size: 1rem;
+    color: #fff;
+    margin-top: 10px;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 5px 10px;
+    border-radius: 8px;
+    display: inline-block;
+    animation: fadeInOut 2s ease;
+  }
+  
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
