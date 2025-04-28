@@ -1,33 +1,33 @@
 const crypto = require('crypto'); 
-const nodemailer = require('nodemailer'); 
 const User = require('../../models/User');
+import { Resend } from 'resend';
+
 const { generateToken, verifyToken } = require('../../utils/authUtils'); 
 require('dotenv').config();
 
-const sendOtpEmail = (email, otp) => {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
 
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: 'Your OTP Code',
-    text: `Your OTP code is: ${otp}. It will expire in 1 hour.`,
-  };
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-  transporter.sendMail(mailOptions, (error, info) => {
+const sendOtpEmail = async (email, otp) => {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'Your App Name <deepakpunyani92@gmail.com>',
+      to: [email],
+      subject: 'Your OTP Code',
+      text: `Your OTP code is: ${otp}. It will expire in 1 hour.`,
+      html: `<p>Your OTP code is: <strong>${otp}</strong>. It will expire in 1 hour.</p>`,
+    });
+
     if (error) {
-      console.log('Error sending OTP email:', error);
+      console.error('Error sending OTP email:', error);
     } else {
-      console.log('OTP email sent:', info.response);
+      console.log('OTP email sent:', data);
     }
-  });
+  } catch (err) {
+    console.error('Unexpected error sending OTP email:', err);
+  }
 };
+
 
 const authResolver = {
   Query: {
