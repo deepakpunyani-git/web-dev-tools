@@ -1,6 +1,6 @@
 const crypto = require('crypto'); 
 const User = require('../../models/User');
-import { Resend } from 'resend';
+const { Resend } = require('resend');
 
 const { generateToken, verifyToken } = require('../../utils/authUtils'); 
 require('dotenv').config();
