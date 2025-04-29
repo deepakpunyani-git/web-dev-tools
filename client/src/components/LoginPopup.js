@@ -3,11 +3,14 @@ import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION, VERIFY_OTP_MUTATION } from "../graphql/mutations";
 import { toast } from "react-toastify";
 import { useLogin } from "../context/LoginContext";
+import { Spinner } from "react-bootstrap"; // Import Spinner from React Bootstrap
 
 const LoginPopup = ({ onClose, onLoginSuccess }) => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState(1);
+  const [resendTimeout, setResendTimeout] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // Loading state for OTP verification
 
   const { setIsAuthenticated } = useLogin();
 
@@ -49,9 +52,15 @@ const LoginPopup = ({ onClose, onLoginSuccess }) => {
       role,
       bookmarkedTools = [],
       toolSettingsDefaults = {
-        minimap: false,
-        wordWrap: "on",
+        minimap: true,
+        wordWrap: "off",
         tabSize: 2,
+        fontSize: 14,
+        insertSpaces: true,
+        theme: "vs-light",
+        lineNumbers: "on",
+        cursorStyle: "line",
+        renderIndentGuides: true,
       },
     },
   }) => {
@@ -63,29 +72,49 @@ const LoginPopup = ({ onClose, onLoginSuccess }) => {
 
   const handleOtpSubmit = async () => {
     toast.dismiss();
-
     if (!otp) return toast.error("OTP is required.");
+
+    setIsLoading(true); 
 
     try {
       const { data } = await verifyOtp({ variables: { email, otp } });
 
       if (data?.VerifyOtp?.success) {
         saveUserSettings(data.VerifyOtp);
-        setIsAuthenticated(true); 
+        setIsAuthenticated(true);
         toast.success("Login successful!");
-        onLoginSuccess(); 
+        onLoginSuccess();
         onClose();
       } else {
         toast.error(data?.VerifyOtp?.message || "OTP verification failed.");
       }
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false); 
     }
   };
 
   const handleOtpChange = (e) => {
     const value = e.target.value.replace(/\D/g, "").slice(0, 6);
     setOtp(value);
+  };
+
+  const handleResendOtp = async () => {
+    if (resendTimeout) return toast.error("Please wait before resending OTP.");
+
+    try {
+      const { data } = await login({ variables: { email } });
+
+      if (data?.LoginSignup?.success) {
+        toast.success("OTP sent successfully!");
+        setResendTimeout(setTimeout(() => setResendTimeout(null), 60000)); 
+      } else {
+        toast.error(data?.LoginSignup?.message || "Resend OTP failed.");
+      }
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -115,7 +144,10 @@ const LoginPopup = ({ onClose, onLoginSuccess }) => {
             />
             <div className="button-group">
               <button className="back-btn" onClick={() => setStep(1)}>← Back</button>
-              <button className="submit-btn" onClick={handleOtpSubmit}>Verify OTP</button>
+              <button className="submit-btn" onClick={handleOtpSubmit}>
+                {isLoading ? <Spinner animation="border" size="sm" /> : "Verify OTP"}
+              </button>
+              <button className="resend-btn" onClick={handleResendOtp}>Resend OTP</button>
             </div>
           </>
         )}
