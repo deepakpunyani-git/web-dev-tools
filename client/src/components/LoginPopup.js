@@ -3,14 +3,17 @@ import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION, VERIFY_OTP_MUTATION } from "../graphql/mutations";
 import { toast } from "react-toastify";
 import { useLogin } from "../context/LoginContext";
-import { Spinner } from "react-bootstrap"; // Import Spinner from React Bootstrap
+import { Spinner } from "react-bootstrap";
 
 const LoginPopup = ({ onClose, onLoginSuccess }) => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState(1);
   const [resendTimeout, setResendTimeout] = useState(null);
-  const [isLoading, setIsLoading] = useState(false); // Loading state for OTP verification
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
 
   const { setIsAuthenticated } = useLogin();
 
@@ -24,6 +27,16 @@ const LoginPopup = ({ onClose, onLoginSuccess }) => {
     setStep(1);
   }, []);
 
+  useEffect(() => {
+    let interval = null;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
   const handleEmailSubmit = async () => {
     toast.dismiss();
     if (!email.trim()) return toast.error("Email is required.");
@@ -31,6 +44,7 @@ const LoginPopup = ({ onClose, onLoginSuccess }) => {
     const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!isValid) return toast.error("Invalid email format.");
 
+    setIsEmailSubmitting(true);
     try {
       const { data } = await login({ variables: { email } });
 
@@ -43,6 +57,8 @@ const LoginPopup = ({ onClose, onLoginSuccess }) => {
       }
     } catch (error) {
       toast.error(error.message || "Something went wrong. Please try again.");
+    } finally {
+      setIsEmailSubmitting(false);
     }
   };
 
@@ -74,8 +90,7 @@ const LoginPopup = ({ onClose, onLoginSuccess }) => {
     toast.dismiss();
     if (!otp) return toast.error("OTP is required.");
 
-    setIsLoading(true); 
-
+    setIsLoading(true);
     try {
       const { data } = await verifyOtp({ variables: { email, otp } });
 
@@ -91,7 +106,7 @@ const LoginPopup = ({ onClose, onLoginSuccess }) => {
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -103,17 +118,22 @@ const LoginPopup = ({ onClose, onLoginSuccess }) => {
   const handleResendOtp = async () => {
     if (resendTimeout) return toast.error("Please wait before resending OTP.");
 
+    setResendLoading(true);
     try {
       const { data } = await login({ variables: { email } });
 
       if (data?.LoginSignup?.success) {
-        toast.success("OTP sent successfully!");
-        setResendTimeout(setTimeout(() => setResendTimeout(null), 60000)); 
+        toast.success("OTP resent successfully!");
+        setResendTimer(60);
+        const timeout = setTimeout(() => setResendTimeout(null), 60000);
+        setResendTimeout(timeout);
       } else {
         toast.error(data?.LoginSignup?.message || "Resend OTP failed.");
       }
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -123,6 +143,24 @@ const LoginPopup = ({ onClose, onLoginSuccess }) => {
         <button className="close-popup" onClick={onClose}>✖</button>
         <h2>{step === 1 ? "Login / Signup" : "Enter OTP"}</h2>
 
+        {step === 2 && (
+          <div className="resend-top">
+            <button
+              className="resend-link"
+              onClick={handleResendOtp}
+              disabled={resendLoading || resendTimer > 0}
+            >
+              {resendLoading ? (
+                <Spinner animation="border" size="sm" />
+              ) : resendTimer > 0 ? (
+                `Resend OTP in ${resendTimer}s`
+              ) : (
+                "Resend OTP"
+              )}
+            </button>
+          </div>
+        )}
+
         {step === 1 ? (
           <>
             <input
@@ -130,8 +168,11 @@ const LoginPopup = ({ onClose, onLoginSuccess }) => {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isEmailSubmitting}
             />
-            <button className="submit-btn" onClick={handleEmailSubmit}>Continue</button>
+            <button className="submit-btn" onClick={handleEmailSubmit} disabled={isEmailSubmitting}>
+              {isEmailSubmitting ? <Spinner animation="border" size="sm" /> : "Continue"}
+            </button>
           </>
         ) : (
           <>
@@ -141,13 +182,28 @@ const LoginPopup = ({ onClose, onLoginSuccess }) => {
               value={otp}
               onChange={handleOtpChange}
               maxLength={6}
+              disabled={isLoading}
             />
             <div className="button-group">
-              <button className="back-btn" onClick={() => setStep(1)}>← Back</button>
-              <button className="submit-btn" onClick={handleOtpSubmit}>
+              <button className="back-btn" onClick={() => setStep(1)} disabled={isLoading}>
+                ← Back
+              </button>
+              <button className="submit-btn" onClick={handleOtpSubmit} disabled={isLoading}>
                 {isLoading ? <Spinner animation="border" size="sm" /> : "Verify OTP"}
               </button>
-              <button className="resend-btn" onClick={handleResendOtp}>Resend OTP</button>
+              <button
+                className="resend-btn"
+                onClick={handleResendOtp}
+                disabled={resendLoading || resendTimer > 0}
+              >
+                {resendLoading ? (
+                  <Spinner animation="border" size="sm" />
+                ) : resendTimer > 0 ? (
+                  `Resend OTP in ${resendTimer}s`
+                ) : (
+                  "Resend OTP"
+                )}
+              </button>
             </div>
           </>
         )}

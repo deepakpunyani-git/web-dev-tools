@@ -3,10 +3,30 @@ import { Toast, ToastContainer } from "react-bootstrap";
 import { Editor } from "@monaco-editor/react";
 import { HTMLHint } from "htmlhint";
 import BookmarkButton from "../../components/BookmarkButton";
-import { useSaveToolUsage  } from '../../components/saveUsage';
+import { useSaveToolUsage } from "../../components/saveUsage";
+
+const defaultSettings = {
+  tabSize: 2,
+  wordWrap: "off",
+  minimap: true,
+  fontSize: 14,
+  insertSpaces: true,
+  theme: "vs-light",
+  lineNumbers: "on",
+  cursorStyle: "line",
+  renderIndentGuides: true,
+};
 
 const HtmlBeautifier = () => {
-  const [storedSettings, setStoredSettings] = useState(null);
+  const [settings, setSettings] = useState(() => {
+    try {
+      const saved = localStorage.getItem("toolSettingsDefaults");
+      return saved ? JSON.parse(saved) : defaultSettings;
+    } catch {
+      return defaultSettings;
+    }
+  });
+
   const [inputHtml, setInputHtml] = useState("");
   const [beautifiedHtml, setBeautifiedHtml] = useState("");
   const [showToast, setShowToast] = useState(false);
@@ -14,31 +34,32 @@ const HtmlBeautifier = () => {
   const saveUsage = useSaveToolUsage();
 
   useEffect(() => {
-    try {
-      const settingsStr = window.localStorage.getItem("toolSettingsDefaults");
-      if (settingsStr) {
-        setStoredSettings(JSON.parse(settingsStr));
-      } else {
-        setStoredSettings(null);
+    const onStorageChange = (e) => {
+      if (e.key === "toolSettingsDefaults") {
+        try {
+          setSettings(JSON.parse(e.newValue));
+        } catch {}
       }
-    } catch {
-      setStoredSettings(null);
-    }
+    };
+    window.addEventListener("storage", onStorageChange);
+    return () => window.removeEventListener("storage", onStorageChange);
   }, []);
 
-  const defaultSettings = {
-    tabSize: 2,
-    wordWrap: "off",
-    minimap: true,
-    fontSize: 14,
-    insertSpaces: true,
-    theme: "vs-light",
-    lineNumbers: "on",
-    cursorStyle: "line",
-    renderIndentGuides: true,
-  };
-
-  const settings = { ...defaultSettings, ...storedSettings };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      try {
+        const latest = localStorage.getItem("toolSettingsDefaults");
+        if (latest) {
+          const parsed = JSON.parse(latest);
+          const current = JSON.stringify(settings);
+          if (JSON.stringify(parsed) !== current) {
+            setSettings(parsed);
+          }
+        }
+      } catch {}
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [settings]);
 
   const validateHtml = (html) => {
     const rules = {
@@ -80,7 +101,6 @@ const HtmlBeautifier = () => {
       setToastMessage("HTML code beautified successfully!");
       setShowToast(true);
       saveUsage();
-
     } catch {
       setToastMessage("Error beautifying HTML code!");
       setShowToast(true);
@@ -169,7 +189,7 @@ const HtmlBeautifier = () => {
       </div>
 
       <p className="text-center">
-        HTML Beautifier is an innovative online tool designed to simplify and enhance your HTML code. It automatically analyzes your markup and restructures it, resulting in a clean and well-formatted codebase. Whether you're a web developer, designer, or website owner, HTML Beautifier offers an efficient way to optimize your HTML and achieve a more professional and polished look.
+        HTML Beautifier is an innovative online tool designed to simplify and enhance your HTML code. It automatically analyzes your markup and restructures it, resulting in a clean and well-formatted codebase.
       </p>
     </div>
   );
