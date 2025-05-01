@@ -16,6 +16,19 @@ const Header = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userRole");
     localStorage.removeItem("bookmarkedTools");
+    toolSettingsDefaults = {
+      minimap: true,
+      wordWrap: "off",
+      tabSize: 2,
+      fontSize: 14,
+      insertSpaces: true,
+      theme: "vs-light",
+      lineNumbers: "on",
+      cursorStyle: "line",
+      renderIndentGuides: true,
+    }
+  localStorage.setItem("toolSettingsDefaults", JSON.stringify(toolSettingsDefaults));
+
     localStorage.removeItem("toolSettingsDefaults");
     window.dispatchEvent(new Event("storage"));
     setIsAuthenticated(false);

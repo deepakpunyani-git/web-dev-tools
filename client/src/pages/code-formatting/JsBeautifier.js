@@ -5,8 +5,29 @@ import * as esprima from "esprima";
 import { js as jsBeautify } from "js-beautify";
 import BookmarkButton from "../../components/BookmarkButton"; 
 import { useSaveToolUsage  } from '../../components/saveUsage';
+const defaultSettings = {
+  tabSize: 2,
+  wordWrap: "off",
+  minimap: true,
+  fontSize: 14,
+  insertSpaces: true,
+  theme: "vs-light",
+  lineNumbers: "on",
+  cursorStyle: "line",
+  renderIndentGuides: true,
+};
 
 const JsValidator = () => {
+  const [settings, setSettings] = useState(() => {
+      try {
+        const saved = localStorage.getItem("toolSettingsDefaults");
+        return saved ? JSON.parse(saved) : defaultSettings;
+      } catch {
+        return defaultSettings;
+      }
+    });
+  
+
   const [inputJs, setInputJs] = useState("");
   const [validatedJs, setValidatedJs] = useState("");
   const [showToast, setShowToast] = useState(false);
@@ -14,35 +35,33 @@ const JsValidator = () => {
   const [isValid, setIsValid] = useState(false);
   const saveUsage = useSaveToolUsage();
 
-  const [storedSettings, setStoredSettings] = useState(null);
-
-  
-    useEffect(() => {
-      try {
-        const settingsStr = window.localStorage.getItem("toolSettingsDefaults");
-        if (settingsStr) {
-          setStoredSettings(JSON.parse(settingsStr));
-        } else {
-          setStoredSettings(null);
+  useEffect(() => {
+      const onStorageChange = (e) => {
+        if (e.key === "toolSettingsDefaults") {
+          try {
+            setSettings(JSON.parse(e.newValue));
+          } catch {}
         }
-      } catch {
-        setStoredSettings(null);
-      }
+      };
+      window.addEventListener("storage", onStorageChange);
+      return () => window.removeEventListener("storage", onStorageChange);
     }, []);
   
-    const defaultSettings = {
-      tabSize: 2,
-      wordWrap: "off",
-      minimap: true,
-      fontSize: 14,
-      insertSpaces: true,
-      theme: "vs-light",
-      lineNumbers: "on",
-      cursorStyle: "line",
-      renderIndentGuides: true,
-    };
-  
-    const settings = { ...defaultSettings, ...storedSettings };
+    useEffect(() => {
+      const interval = setInterval(() => {
+        try {
+          const latest = localStorage.getItem("toolSettingsDefaults");
+          if (latest) {
+            const parsed = JSON.parse(latest);
+            const current = JSON.stringify(settings);
+            if (JSON.stringify(parsed) !== current) {
+              setSettings(parsed);
+            }
+          }
+        } catch {}
+      }, 1000);
+      return () => clearInterval(interval);
+    }, [settings]);
 
   const handleValidate = () => {
     if (!inputJs.trim()) {

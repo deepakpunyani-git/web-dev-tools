@@ -2,34 +2,57 @@ import React, { useState, useEffect } from "react";
 import { useSaveToolUsage  } from '../../components/saveUsage';
 import BookmarkButton from "../../components/BookmarkButton"; 
 
+const defaultSettings = {
+     
+  theme: "vs-light",
+
+};
+
+
 const PasswordStrengthChecker = () => {
+
+   const [settings, setSettings] = useState(() => {
+        try {
+          const saved = localStorage.getItem("toolSettingsDefaults");
+          return saved ? JSON.parse(saved) : defaultSettings;
+        } catch {
+          return defaultSettings;
+        }
+      });
+
+
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [strength, setStrength] = useState('');
   const saveUsage = useSaveToolUsage();
-  const [storedSettings, setStoredSettings] = useState(null);
 
+useEffect(() => {
+    const onStorageChange = (e) => {
+      if (e.key === "toolSettingsDefaults") {
+        try {
+          setSettings(JSON.parse(e.newValue));
+        } catch {}
+      }
+    };
+    window.addEventListener("storage", onStorageChange);
+    return () => window.removeEventListener("storage", onStorageChange);
+  }, []);
 
   useEffect(() => {
+    const interval = setInterval(() => {
       try {
-        const settingsStr = window.localStorage.getItem("toolSettingsDefaults");
-        if (settingsStr) {
-          setStoredSettings(JSON.parse(settingsStr));
-        } else {
-          setStoredSettings(null);
+        const latest = localStorage.getItem("toolSettingsDefaults");
+        if (latest) {
+          const parsed = JSON.parse(latest);
+          const current = JSON.stringify(settings);
+          if (JSON.stringify(parsed) !== current) {
+            setSettings(parsed);
+          }
         }
-      } catch {
-        setStoredSettings(null);
-      }
-    }, []);
-  
-    const defaultSettings = {
- 
-      theme: "vs-light",
-
-    };
-  
-    const settings = { ...defaultSettings, ...storedSettings };
+      } catch {}
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [settings]);
 
 
   const validatePassword = (password) => {

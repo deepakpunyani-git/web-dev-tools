@@ -143,24 +143,6 @@ const LoginPopup = ({ onClose, onLoginSuccess }) => {
         <button className="close-popup" onClick={onClose}>✖</button>
         <h2>{step === 1 ? "Login / Signup" : "Enter OTP"}</h2>
 
-        {step === 2 && (
-          <div className="resend-top">
-            <button
-              className="resend-link"
-              onClick={handleResendOtp}
-              disabled={resendLoading || resendTimer > 0}
-            >
-              {resendLoading ? (
-                <Spinner animation="border" size="sm" />
-              ) : resendTimer > 0 ? (
-                `Resend OTP in ${resendTimer}s`
-              ) : (
-                "Resend OTP"
-              )}
-            </button>
-          </div>
-        )}
-
         {step === 1 ? (
           <>
             <input

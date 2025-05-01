@@ -3,36 +3,57 @@ import axios from "axios";
 import { useSaveToolUsage  } from '../../components/saveUsage';
 import BookmarkButton from "../../components/BookmarkButton"; 
 
+const defaultSettings = {
+     
+  theme: "vs-light",
+
+};
+
+
 const HTTPHeaderViewer = () => {
+   const [settings, setSettings] = useState(() => {
+        try {
+          const saved = localStorage.getItem("toolSettingsDefaults");
+          return saved ? JSON.parse(saved) : defaultSettings;
+        } catch {
+          return defaultSettings;
+        }
+      });
+
   const [url, setUrl] = useState("");
   const [headers, setHeaders] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const saveUsage = useSaveToolUsage();
 
-   const [storedSettings, setStoredSettings] = useState(null);
-  
-  
-    useEffect(() => {
-        try {
-          const settingsStr = window.localStorage.getItem("toolSettingsDefaults");
-          if (settingsStr) {
-            setStoredSettings(JSON.parse(settingsStr));
-          } else {
-            setStoredSettings(null);
-          }
-        } catch {
-          setStoredSettings(null);
-        }
-      }, []);
-    
-      const defaultSettings = {
+   useEffect(() => {
+       const onStorageChange = (e) => {
+         if (e.key === "toolSettingsDefaults") {
+           try {
+             setSettings(JSON.parse(e.newValue));
+           } catch {}
+         }
+       };
+       window.addEventListener("storage", onStorageChange);
+       return () => window.removeEventListener("storage", onStorageChange);
+     }, []);
    
-        theme: "vs-light",
-  
-      };
-    
-      const settings = { ...defaultSettings, ...storedSettings };
+     useEffect(() => {
+       const interval = setInterval(() => {
+         try {
+           const latest = localStorage.getItem("toolSettingsDefaults");
+           if (latest) {
+             const parsed = JSON.parse(latest);
+             const current = JSON.stringify(settings);
+             if (JSON.stringify(parsed) !== current) {
+               setSettings(parsed);
+             }
+           }
+         } catch {}
+       }, 1000);
+       return () => clearInterval(interval);
+     }, [settings]);
 
+     
   const fetchHeaders = async () => {
     if (!url.trim()) {
       setErrorMessage("Please enter a valid URL.");

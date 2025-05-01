@@ -416,7 +416,7 @@ code {
   border-radius: 4px;
 }
 
-.submit-btn {
+.submit-btn  , button.resend-btn{
   background: #4caf50;
   color: white;
   border: none;
@@ -427,7 +427,7 @@ code {
   margin-top: 10px;
 }
 
-.submit-btn:hover {
+.submit-btn:hover  ,  button.resend-btn:hover{
   background: #45a049;
 }
 

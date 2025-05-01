@@ -4,8 +4,28 @@ import { Toast, ToastContainer } from "react-bootstrap";
 import { Editor } from "@monaco-editor/react";
 import { useSaveToolUsage  } from '../../components/saveUsage';
 import BookmarkButton from "../../components/BookmarkButton"; 
+const defaultSettings = {
+  tabSize: 2,
+  wordWrap: "off",
+  minimap: true,
+  fontSize: 14,
+  insertSpaces: true,
+  theme: "vs-light",
+  lineNumbers: "on",
+  cursorStyle: "line",
+  renderIndentGuides: true,
+};
 
 const JsonYamlConverter = () => {
+    const [settings, setSettings] = useState(() => {
+      try {
+        const saved = localStorage.getItem("toolSettingsDefaults");
+        return saved ? JSON.parse(saved) : defaultSettings;
+      } catch {
+        return defaultSettings;
+      }
+    });
+
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [format, setFormat] = useState("jsonToYaml");
@@ -13,47 +33,33 @@ const JsonYamlConverter = () => {
   const [showToast, setShowToast] = useState(false);
   const saveUsage = useSaveToolUsage();
 
-   const [storedSettings, setStoredSettings] = useState(null);
-  
+  useEffect(() => {
+      const onStorageChange = (e) => {
+        if (e.key === "toolSettingsDefaults") {
+          try {
+            setSettings(JSON.parse(e.newValue));
+          } catch {}
+        }
+      };
+      window.addEventListener("storage", onStorageChange);
+      return () => window.removeEventListener("storage", onStorageChange);
+    }, []);
   
     useEffect(() => {
+      const interval = setInterval(() => {
         try {
-          const settingsStr = window.localStorage.getItem("toolSettingsDefaults");
-          if (settingsStr) {
-            setStoredSettings(JSON.parse(settingsStr));
-          } else {
-            setStoredSettings(null);
+          const latest = localStorage.getItem("toolSettingsDefaults");
+          if (latest) {
+            const parsed = JSON.parse(latest);
+            const current = JSON.stringify(settings);
+            if (JSON.stringify(parsed) !== current) {
+              setSettings(parsed);
+            }
           }
-        } catch {
-          setStoredSettings(null);
-        }
-      }, []);
-    
-      const defaultSettings = {
-        tabSize: 2,
-        wordWrap: "off",
-        minimap: true,
-        fontSize: 14,
-        insertSpaces: true,
-        theme: "vs-light",
-        lineNumbers: "on",
-        cursorStyle: "line",
-        renderIndentGuides: true,
-      };
-    
-      const settings = { ...defaultSettings, ...storedSettings };
-      const editorOptions = {
-        tabSize: settings.tabSize,
-        wordWrap: settings.wordWrap,
-        minimap: { enabled: settings.minimap },
-        fontSize: settings.fontSize,
-        insertSpaces: settings.insertSpaces,
-        lineNumbers: settings.lineNumbers,
-        cursorStyle: settings.cursorStyle,
-        renderIndentGuides: settings.renderIndentGuides,
-        formatOnPaste: true,
-        formatOnType: true,
-      };
+        } catch {}
+      }, 1000);
+      return () => clearInterval(interval);
+    }, [settings]);
 
   const handleConvert = () => {
     try {
@@ -82,6 +88,20 @@ const JsonYamlConverter = () => {
       setOutput("");
     }
   };
+
+  const editorOptions = {
+    tabSize: settings.tabSize,
+    wordWrap: settings.wordWrap,
+    minimap: { enabled: settings.minimap },
+    fontSize: settings.fontSize,
+    insertSpaces: settings.insertSpaces,
+    lineNumbers: settings.lineNumbers,
+    cursorStyle: settings.cursorStyle,
+    renderIndentGuides: settings.renderIndentGuides,
+    formatOnPaste: true,
+    formatOnType: true,
+  };
+
 
   return (
     <div className="container-fluid container-ed p-4">

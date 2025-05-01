@@ -6,7 +6,30 @@ import { minify } from "terser";
 import BookmarkButton from "../../components/BookmarkButton"; 
 import { useSaveToolUsage  } from '../../components/saveUsage';
 
+
+const defaultSettings = {
+  tabSize: 2,
+  wordWrap: "off",
+  minimap: true,
+  fontSize: 14,
+  insertSpaces: true,
+  theme: "vs-light",
+  lineNumbers: "on",
+  cursorStyle: "line",
+  renderIndentGuides: true,
+};
+
 const JsMinifier = () => {
+
+    const [settings, setSettings] = useState(() => {
+      try {
+        const saved = localStorage.getItem("toolSettingsDefaults");
+        return saved ? JSON.parse(saved) : defaultSettings;
+      } catch {
+        return defaultSettings;
+      }
+    });
+    
   const [inputJs, setInputJs] = useState("");
   const [minifiedJs, setMinifiedJs] = useState("");
   const [showToast, setShowToast] = useState(false);
@@ -14,47 +37,21 @@ const JsMinifier = () => {
   const [isValid, setIsValid] = useState(false);
   const saveUsage = useSaveToolUsage();
 
-  const [storedSettings, setStoredSettings] = useState(null);
-  
-  
-    useEffect(() => {
-        try {
-          const settingsStr = window.localStorage.getItem("toolSettingsDefaults");
-          if (settingsStr) {
-            setStoredSettings(JSON.parse(settingsStr));
-          } else {
-            setStoredSettings(null);
-          }
-        } catch {
-          setStoredSettings(null);
-        }
-      }, []);
-    
-      const defaultSettings = {
-        tabSize: 2,
-        wordWrap: "off",
-        minimap: true,
-        fontSize: 14,
-        insertSpaces: true,
-        theme: "vs-light",
-        lineNumbers: "on",
-        cursorStyle: "line",
-        renderIndentGuides: true,
-      };
-    
-      const settings = { ...defaultSettings, ...storedSettings };
-      const editorOptions = {
-        tabSize: settings.tabSize,
-        wordWrap: settings.wordWrap,
-        minimap: { enabled: settings.minimap },
-        fontSize: settings.fontSize,
-        insertSpaces: settings.insertSpaces,
-        lineNumbers: settings.lineNumbers,
-        cursorStyle: settings.cursorStyle,
-        renderIndentGuides: settings.renderIndentGuides,
-        formatOnPaste: true,
-        formatOnType: true,
-      };
+     useEffect(() => {
+       const interval = setInterval(() => {
+         try {
+           const latest = localStorage.getItem("toolSettingsDefaults");
+           if (latest) {
+             const parsed = JSON.parse(latest);
+             const current = JSON.stringify(settings);
+             if (JSON.stringify(parsed) !== current) {
+               setSettings(parsed);
+             }
+           }
+         } catch {}
+       }, 1000);
+       return () => clearInterval(interval);
+     }, [settings]);
 
   const handleMinify = async () => {
     if (!inputJs.trim()) {
@@ -95,6 +92,19 @@ const JsMinifier = () => {
     link.href = URL.createObjectURL(blob);
     link.download = "minified.js";
     link.click();
+  };
+
+  const editorOptions = {
+    tabSize: settings.tabSize,
+    wordWrap: settings.wordWrap,
+    minimap: { enabled: settings.minimap },
+    fontSize: settings.fontSize,
+    insertSpaces: settings.insertSpaces,
+    lineNumbers: settings.lineNumbers,
+    cursorStyle: settings.cursorStyle,
+    renderIndentGuides: settings.renderIndentGuides,
+    formatOnPaste: true,
+    formatOnType: true,
   };
 
   return (
