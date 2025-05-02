@@ -24,7 +24,6 @@ const TextCaseConverter = () => {
   const [convertedText, setConvertedText] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const saveUsage = useSaveToolUsage();
-  const [storedSettings, setStoredSettings] = useState(null);
 
 
   

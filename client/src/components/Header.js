@@ -16,7 +16,7 @@ const Header = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userRole");
     localStorage.removeItem("bookmarkedTools");
-    toolSettingsDefaults = {
+    const  toolSettingsDefaults = {
       minimap: true,
       wordWrap: "off",
       tabSize: 2,
